@@ -17,6 +17,11 @@ export function ThemeInit() {
         document.documentElement.classList.remove('dark')
       }
     }
+
+    const hash = window.location.hash
+    if (hash && hash.includes('type=recovery')) {
+      window.location.href = '/login' + hash
+    }
   }, [])
 
   return null
