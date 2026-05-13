@@ -10,7 +10,8 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
+    supabase.auth.getUser().then(async (res: any) => {
+      const user = res?.data?.user
       if (!user) {
         router.replace('/admin/login')
         return
