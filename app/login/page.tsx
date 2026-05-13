@@ -1,22 +1,30 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useStore } from '@/lib/store'
-import { IndianRupee, Eye, EyeOff, LogIn, UserPlus, ArrowLeft } from 'lucide-react'
+import { IndianRupee, Eye, EyeOff, LogIn, UserPlus, ArrowLeft, Lock } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
-  const [mode, setMode] = useState<'login' | 'signup'>('login')
+  const [mode, setMode] = useState<'login' | 'signup' | 'reset'>('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
   const [name, setName] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const setUser = useStore(s => s.setUser)
+
+  useEffect(() => {
+    const hash = window.location.hash
+    if (hash && hash.includes('type=recovery')) {
+      setMode('reset')
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,6 +44,11 @@ export default function LoginPage() {
           setMode('login')
           setError('Account created! Please check your email to confirm.')
         }
+      } else if (mode === 'reset') {
+        const { error } = await supabase.auth.updateUser({ password: newPassword })
+        if (error) throw error
+        setError('Password updated! Redirecting to admin login...')
+        setTimeout(() => router.push('/admin/login'), 2000)
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
@@ -56,6 +69,18 @@ export default function LoginPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleForgotPassword = async () => {
+    if (!email) { setError('Please enter your email first'); return }
+    setLoading(true)
+    setError('')
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://pricespy-india.vercel.app/login',
+    })
+    setLoading(false)
+    if (error) setError(error.message)
+    else setError('Check your email for the reset link.')
   }
 
   const handleSocialLogin = async (provider: 'google' | 'apple') => {
@@ -83,20 +108,22 @@ export default function LoginPage() {
             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
               {mode === 'login' ? (
                 <LogIn size={28} className="text-primary" />
+              ) : mode === 'reset' ? (
+                <Lock size={28} className="text-primary" />
               ) : (
                 <UserPlus size={28} className="text-primary" />
               )}
             </div>
             <h2 className="text-[28px] font-bold text-on-surface mb-1">
-              {mode === 'login' ? 'Welcome back' : 'Create account'}
+              {mode === 'login' ? 'Welcome back' : mode === 'reset' ? 'Reset password' : 'Create account'}
             </h2>
             <p className="text-[15px] text-on-surface-variant">
-              {mode === 'login' ? 'Sign in to track your price alerts' : 'Start comparing prices instantly'}
+              {mode === 'login' ? 'Sign in to track your price alerts' : mode === 'reset' ? 'Enter your new password' : 'Start comparing prices instantly'}
             </p>
           </div>
 
           {/* Tab Toggle */}
-          <div className="bg-surface-container-low border border-outline-variant/30 rounded-xl p-1 flex mb-6">
+          {mode !== 'reset' && <div className="bg-surface-container-low border border-outline-variant/30 rounded-xl p-1 flex mb-6">
             <button
               onClick={() => { setMode('login'); setError('') }}
               className={`flex-1 py-2.5 rounded-lg text-[14px] font-medium text-center transition-all ${
@@ -141,39 +168,62 @@ export default function LoginPage() {
                 />
               </div>
             )}
-            <div>
-              <label className="text-[12px] font-medium text-on-surface-variant mb-1.5 block">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                className="w-full bg-surface border border-outline-variant/30 rounded-xl px-4 py-3 text-[15px] text-on-surface placeholder-on-surface-variant focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all"
-                required
-              />
-            </div>
-            <div className="relative">
-              <label className="text-[12px] font-medium text-on-surface-variant mb-1.5 block">Password</label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full bg-surface border border-outline-variant/30 rounded-xl px-4 py-3 pr-12 text-[15px] text-on-surface placeholder-on-surface-variant focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 bottom-3.5 text-on-surface-variant hover:text-on-surface"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
+            {mode !== 'reset' ? (
+              <div>
+                <label className="text-[12px] font-medium text-on-surface-variant mb-1.5 block">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  className="w-full bg-surface border border-outline-variant/30 rounded-xl px-4 py-3 text-[15px] text-on-surface placeholder-on-surface-variant focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all"
+                  required
+                />
+              </div>
+            ) : null}
+            {mode === 'reset' ? (
+              <div className="relative">
+                <label className="text-[12px] font-medium text-on-surface-variant mb-1.5 block">New Password</label>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full bg-surface border border-outline-variant/30 rounded-xl px-4 py-3 pr-12 text-[15px] text-on-surface placeholder-on-surface-variant focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 bottom-3.5 text-on-surface-variant hover:text-on-surface"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            ) : (
+              <div className="relative">
+                <label className="text-[12px] font-medium text-on-surface-variant mb-1.5 block">Password</label>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full bg-surface border border-outline-variant/30 rounded-xl px-4 py-3 pr-12 text-[15px] text-on-surface placeholder-on-surface-variant focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 bottom-3.5 text-on-surface-variant hover:text-on-surface"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            )}
 
             {mode === 'login' && (
               <div className="text-right">
-                <button type="button" onClick={async () => { if (!email) { setError('Please enter your email first'); return }; setLoading(true); const { error } = await supabase.auth.resetPasswordForEmail(email); setLoading(false); if (error) setError(error.message); else setError('Check your email for the reset link.') }} className="text-[12px] text-primary hover:opacity-70 transition-opacity font-medium">
+                <button type="button" onClick={handleForgotPassword} className="text-[12px] text-primary hover:opacity-70 transition-opacity font-medium">
                   Forgot password?
                 </button>
               </div>
@@ -186,6 +236,8 @@ export default function LoginPage() {
             >
               {loading ? (
                 <span className="w-5 h-5 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin" />
+              ) : mode === 'reset' ? (
+                'Update Password'
               ) : mode === 'login' ? (
                 'Sign In'
               ) : (
@@ -194,41 +246,45 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-outline-variant/30"></div>
-            </div>
-            <div className="relative flex justify-center">
-              <span className="bg-background px-4 text-[12px] text-on-surface-variant">or continue with</span>
-            </div>
-          </div>
+          {mode !== 'reset' && (
+            <>
+              <div className="relative my-8">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-outline-variant/30"></div>
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="bg-background px-4 text-[12px] text-on-surface-variant">or continue with</span>
+                </div>
+              </div>
 
-          <div className="flex gap-3">
-            <button
-              onClick={() => handleSocialLogin('google')}
-              className="flex-1 bg-surface-container-low border border-outline-variant/30 rounded-xl py-3 text-[13px] font-medium text-on-surface hover:bg-surface-variant transition-colors flex items-center justify-center gap-2 active:scale-95"
-            >
-              <span className="material-symbols-outlined text-[20px]">g_mobiledata</span>
-              Google
-            </button>
-            <button
-              onClick={() => handleSocialLogin('apple')}
-              className="flex-1 bg-surface-container-low border border-outline-variant/30 rounded-xl py-3 text-[13px] font-medium text-on-surface hover:bg-surface-variant transition-colors flex items-center justify-center gap-2 active:scale-95"
-            >
-              <span className="material-symbols-outlined text-[20px]">apple</span>
-              Apple
-            </button>
-          </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => handleSocialLogin('google')}
+                  className="flex-1 bg-surface-container-low border border-outline-variant/30 rounded-xl py-3 text-[13px] font-medium text-on-surface hover:bg-surface-variant transition-colors flex items-center justify-center gap-2 active:scale-95"
+                >
+                  <span className="material-symbols-outlined text-[20px]">g_mobiledata</span>
+                  Google
+                </button>
+                <button
+                  onClick={() => handleSocialLogin('apple')}
+                  className="flex-1 bg-surface-container-low border border-outline-variant/30 rounded-xl py-3 text-[13px] font-medium text-on-surface hover:bg-surface-variant transition-colors flex items-center justify-center gap-2 active:scale-95"
+                >
+                  <span className="material-symbols-outlined text-[20px]">apple</span>
+                  Apple
+                </button>
+              </div>
 
-          <p className="text-center mt-8 text-[13px] text-on-surface-variant">
-            {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
-            <button
-              onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError('') }}
-              className="text-primary font-semibold hover:opacity-70 transition-opacity"
-            >
-              {mode === 'login' ? 'Sign Up' : 'Sign In'}
-            </button>
-          </p>
+              <p className="text-center mt-8 text-[13px] text-on-surface-variant">
+                {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
+                <button
+                  onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError('') }}
+                  className="text-primary font-semibold hover:opacity-70 transition-opacity"
+                >
+                  {mode === 'login' ? 'Sign Up' : 'Sign In'}
+                </button>
+              </p>
+            </>
+          )}
         </div>
       </div>
     </main>
