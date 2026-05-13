@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { adminGetProduct, adminUpdateProduct, adminUpsertPrice } from '@/lib/admin-db'
 import { getCategories } from '@/lib/db'
 import type { Category, Platform } from '@/types'
-import { platformConfig } from '@/types'
+import { platformConfig, platformGroups } from '@/types'
 import { ArrowLeft, Plus, X, Save } from 'lucide-react'
 import Link from 'next/link'
 
@@ -30,7 +30,8 @@ function EditProductForm() {
     id?: string; price: string; original_price: string; affiliate_link: string; in_stock: boolean
   }>>>({})
 
-  const platforms: Platform[] = ['amazon', 'flipkart', 'meesho', 'myntra', 'croma']
+  const platforms = Object.keys(platformConfig) as Platform[]
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     if (!id) { setLoading(false); return }
@@ -216,33 +217,54 @@ function EditProductForm() {
 
         <section className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-5 space-y-4">
           <h2 className="text-[16px] font-semibold text-on-surface">Prices &amp; Affiliate Links</h2>
-          <div className="space-y-3">
-            {platforms.map(platform => {
-              const cfg = platformConfig[platform]
-              const p = prices[platform]
+          <div className="space-y-4">
+            {platformGroups.map(group => {
+              const groupPlatforms = platforms.filter(p => platformConfig[p].group === group)
+              if (groupPlatforms.length === 0) return null
+              const isCollapsed = collapsedGroups[group]
               return (
-                <div key={platform} className="bg-surface-container-low rounded-xl p-4 space-y-3" style={{ borderLeft: `3px solid ${cfg.color}` }}>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[13px] font-semibold" style={{ color: cfg.color }}>{cfg.label}</span>
-                    <label className="flex items-center gap-1.5 text-[12px] text-on-surface-variant">
-                      <input type="checkbox" checked={p?.in_stock ?? true} onChange={e => setPrices(prev => ({ ...prev, [platform]: { ...prev[platform], in_stock: e.target.checked, price: prev[platform]?.price || '', original_price: prev[platform]?.original_price || '', affiliate_link: prev[platform]?.affiliate_link || '' } }))} className="w-3.5 h-3.5" />
-                      In Stock
-                    </label>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div>
-                      <label className="text-[11px] text-on-surface-variant mb-1 block">Price (₹)</label>
-                      <input type="number" value={p?.price || ''} onChange={e => setPrices(prev => ({ ...prev, [platform]: { ...prev[platform], price: e.target.value, original_price: prev[platform]?.original_price || '', affiliate_link: prev[platform]?.affiliate_link || '', in_stock: prev[platform]?.in_stock ?? true } }))} className="w-full bg-surface border border-outline-variant/30 rounded-lg px-3 py-2 text-[14px] text-on-surface outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                <div key={group} className="bg-surface-container-low rounded-xl overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setCollapsedGroups(prev => ({ ...prev, [group]: !prev[group] }))}
+                    className="w-full flex items-center justify-between px-4 py-3 text-[13px] font-semibold text-on-surface hover:bg-surface-container transition-colors"
+                  >
+                    {group}
+                    <span className={`transition-transform ${isCollapsed ? '' : 'rotate-180'}`}>▼</span>
+                  </button>
+                  {!isCollapsed && (
+                    <div className="px-4 pb-3 space-y-3">
+                      {groupPlatforms.map(platform => {
+                        const cfg = platformConfig[platform]
+                        const p = prices[platform]
+                        return (
+                          <div key={platform} className="rounded-xl p-4 space-y-3" style={{ borderLeft: `3px solid ${cfg.color}`, background: cfg.bg + '30' }}>
+                            <div className="flex items-center justify-between">
+                              <span className="text-[13px] font-semibold" style={{ color: cfg.color }}>{cfg.label}</span>
+                              <label className="flex items-center gap-1.5 text-[12px] text-on-surface-variant">
+                                <input type="checkbox" checked={p?.in_stock ?? true} onChange={e => setPrices(prev => ({ ...prev, [platform]: { ...prev[platform], in_stock: e.target.checked, price: prev[platform]?.price || '', original_price: prev[platform]?.original_price || '', affiliate_link: prev[platform]?.affiliate_link || '' } }))} className="w-3.5 h-3.5" />
+                                In Stock
+                              </label>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                              <div>
+                                <label className="text-[11px] text-on-surface-variant mb-1 block">Price (₹)</label>
+                                <input type="number" value={p?.price || ''} onChange={e => setPrices(prev => ({ ...prev, [platform]: { ...prev[platform], price: e.target.value, original_price: prev[platform]?.original_price || '', affiliate_link: prev[platform]?.affiliate_link || '', in_stock: prev[platform]?.in_stock ?? true } }))} className="w-full bg-surface border border-outline-variant/30 rounded-lg px-3 py-2 text-[14px] text-on-surface outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                              </div>
+                              <div>
+                                <label className="text-[11px] text-on-surface-variant mb-1 block">Original Price (₹)</label>
+                                <input type="number" value={p?.original_price || ''} onChange={e => setPrices(prev => ({ ...prev, [platform]: { ...prev[platform], price: prev[platform]?.price || '', original_price: e.target.value, affiliate_link: prev[platform]?.affiliate_link || '', in_stock: prev[platform]?.in_stock ?? true } }))} className="w-full bg-surface border border-outline-variant/30 rounded-lg px-3 py-2 text-[14px] text-on-surface outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                              </div>
+                              <div>
+                                <label className="text-[11px] text-on-surface-variant mb-1 block">Affiliate Link</label>
+                                <input value={p?.affiliate_link || ''} onChange={e => setPrices(prev => ({ ...prev, [platform]: { ...prev[platform], price: prev[platform]?.price || '', original_price: prev[platform]?.original_price || '', affiliate_link: e.target.value, in_stock: prev[platform]?.in_stock ?? true } }))} className="w-full bg-surface border border-outline-variant/30 rounded-lg px-3 py-2 text-[14px] text-on-surface outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
-                    <div>
-                      <label className="text-[11px] text-on-surface-variant mb-1 block">Original Price (₹)</label>
-                      <input type="number" value={p?.original_price || ''} onChange={e => setPrices(prev => ({ ...prev, [platform]: { ...prev[platform], price: prev[platform]?.price || '', original_price: e.target.value, affiliate_link: prev[platform]?.affiliate_link || '', in_stock: prev[platform]?.in_stock ?? true } }))} className="w-full bg-surface border border-outline-variant/30 rounded-lg px-3 py-2 text-[14px] text-on-surface outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-on-surface-variant mb-1 block">Affiliate Link</label>
-                      <input value={p?.affiliate_link || ''} onChange={e => setPrices(prev => ({ ...prev, [platform]: { ...prev[platform], price: prev[platform]?.price || '', original_price: prev[platform]?.original_price || '', affiliate_link: e.target.value, in_stock: prev[platform]?.in_stock ?? true } }))} className="w-full bg-surface border border-outline-variant/30 rounded-lg px-3 py-2 text-[14px] text-on-surface outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
-                    </div>
-                  </div>
+                  )}
                 </div>
               )
             })}

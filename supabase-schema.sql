@@ -36,7 +36,7 @@ CREATE TABLE products (
 CREATE TABLE prices (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-  platform TEXT NOT NULL CHECK (platform IN ('amazon','flipkart','meesho','myntra','croma')),
+  platform TEXT NOT NULL CHECK (platform IN ('amazon','flipkart','meesho','snapdeal','jiomart','tatacliq','indiamart','myntra','ajio','bewakoof','zivame','clovia','libas','fabindia','limeroad','nykaa','purplle','mamaearth','mcaffeine','plum','sugar','bigbasket','licious','freshtohome','countrydelight','croma','vijaysales','boat','noise','lenskart','coolwinks','pepperfry','urbanladder','wakefit','woodenstreet','onemg','netmeds','pharmeasy','healthkart','apollo','makemytrip','goibibo','ixigo','easemytrip','cleartrip','yatra','redbus','bookmyshow','cardekho','cars24','droom','99acres','magicbricks','housing','nobroker','policybazaar','groww','paytm','firstcry','hopscotch','agrostar','dehaat','moglix','industrybuying')),
   price INTEGER NOT NULL CHECK (price > 0),
   original_price INTEGER NOT NULL CHECK (original_price > 0),
   discount_percent INTEGER GENERATED ALWAYS AS (

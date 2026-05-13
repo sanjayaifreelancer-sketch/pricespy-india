@@ -10,3 +10,6 @@ android/app/build/
 android/capacitor-cordova-android-plugins/
 android/.idea/
 local.properties
+
+.vercel
+.env*.local
