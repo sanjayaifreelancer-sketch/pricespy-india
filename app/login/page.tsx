@@ -144,7 +144,7 @@ export default function LoginPage() {
             >
               Sign Up
             </button>
-          </div>
+          </div>}
 
           {error && (
             <div className={`text-[13px] text-center mb-4 p-3 rounded-xl ${
