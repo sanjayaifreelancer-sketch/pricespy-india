@@ -132,4 +132,16 @@ INSERT INTO categories (name, slug, icon, description, product_count) VALUES
   ('Home & Kitchen', 'home-kitchen', 'kitchen', 'Home appliances & kitchenware', 14),
   ('Beauty', 'beauty', 'spa', 'Beauty & personal care', 12),
   ('Cameras', 'cameras', 'camera_alt', 'DSLR, mirrorless & action cams', 9),
-  ('Accessories', 'accessories', 'watch', 'Watches, bags & gadgets', 20);
+  ('Accessories', 'accessories', 'watch', 'Watches, bags & gadgets', 20),
+  ('Grocery & Food', 'grocery', 'restaurant', 'Groceries, meat & food delivery', 10),
+  ('Health & Pharma', 'health', 'local_pharmacy', 'Pharmacy, health supplements & wellness', 15),
+  ('Furniture & Home', 'furniture', 'chair', 'Furniture, decor & home improvement', 12),
+  ('Travel', 'travel', 'flight', 'Flights, hotels & holiday packages', 8),
+  ('Eyewear', 'eyewear', 'glasses', 'Eyeglasses, sunglasses & contact lenses', 6),
+  ('Automobile', 'automobile', 'directions_car', 'Cars, bikes & auto accessories', 7),
+  ('Real Estate', 'real-estate', 'real_estate_agent', 'Property listings & rentals', 5),
+  ('Fintech', 'fintech', 'account_balance', 'Insurance, investments & payments', 9),
+  ('Baby & Kids', 'baby-kids', 'child_care', 'Baby care, toys & kids clothing', 8),
+  ('Events & Tickets', 'events', 'confirmation_number', 'Movies, events & entertainment', 4),
+  ('Agriculture', 'agriculture', 'agriculture', 'Farming supplies & agri inputs', 3),
+  ('B2B & Industrial', 'b2b', 'precision_manufacturing', 'Industrial goods & B2B supplies', 6);

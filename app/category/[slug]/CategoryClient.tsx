@@ -17,6 +17,18 @@ const categoryNames: Record<string, string> = {
   beauty: 'Beauty',
   cameras: 'Cameras',
   accessories: 'Accessories',
+  grocery: 'Grocery & Food',
+  health: 'Health & Pharma',
+  furniture: 'Furniture & Home',
+  travel: 'Travel',
+  eyewear: 'Eyewear',
+  automobile: 'Automobile',
+  'real-estate': 'Real Estate',
+  fintech: 'Fintech',
+  'baby-kids': 'Baby & Kids',
+  events: 'Events & Tickets',
+  agriculture: 'Agriculture',
+  b2b: 'B2B & Industrial',
 }
 
 const categoryIcons: Record<string, string> = {
@@ -28,6 +40,18 @@ const categoryIcons: Record<string, string> = {
   beauty: 'spa',
   cameras: 'camera_alt',
   accessories: 'watch',
+  grocery: 'restaurant',
+  health: 'local_pharmacy',
+  furniture: 'chair',
+  travel: 'flight',
+  eyewear: 'glasses',
+  automobile: 'directions_car',
+  'real-estate': 'real_estate_agent',
+  fintech: 'account_balance',
+  'baby-kids': 'child_care',
+  events: 'confirmation_number',
+  agriculture: 'agriculture',
+  b2b: 'precision_manufacturing',
 }
 
 export default function CategoryClient({ slug }: { slug: string }) {
