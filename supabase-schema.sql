@@ -115,6 +115,9 @@ CREATE POLICY "Users can create alerts" ON price_alerts FOR INSERT WITH CHECK (a
 CREATE POLICY "Users can update own alerts" ON price_alerts FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Users can delete own alerts" ON price_alerts FOR DELETE USING (auth.uid() = user_id);
 
+-- Admin users RLS
+CREATE POLICY "Admins can read own access" ON admin_users FOR SELECT USING (auth.uid() = id);
+
 -- Authenticated user policies for wishlists
 CREATE POLICY "Users can view own wishlist" ON wishlists FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can add to wishlist" ON wishlists FOR INSERT WITH CHECK (auth.uid() = user_id);

@@ -26,7 +26,7 @@ export default function AdminLoginPage() {
           .from('admin_users')
           .select('id')
           .eq('id', data.user.id)
-          .single()
+          .maybeSingle()
 
         if (adminCheck) {
           router.push('/admin')
