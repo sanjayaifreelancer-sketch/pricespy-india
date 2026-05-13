@@ -137,7 +137,7 @@ INSERT INTO categories (name, slug, icon, description, product_count) VALUES
   ('Health & Pharma', 'health', 'local_pharmacy', 'Pharmacy, health supplements & wellness', 15),
   ('Furniture & Home', 'furniture', 'chair', 'Furniture, decor & home improvement', 12),
   ('Travel', 'travel', 'flight', 'Flights, hotels & holiday packages', 8),
-  ('Eyewear', 'eyewear', 'glasses', 'Eyeglasses, sunglasses & contact lenses', 6),
+  ('Eyewear', 'eyewear', 'visibility', 'Eyeglasses, sunglasses & contact lenses', 6),
   ('Automobile', 'automobile', 'directions_car', 'Cars, bikes & auto accessories', 7),
   ('Real Estate', 'real-estate', 'real_estate_agent', 'Property listings & rentals', 5),
   ('Fintech', 'fintech', 'account_balance', 'Insurance, investments & payments', 9),

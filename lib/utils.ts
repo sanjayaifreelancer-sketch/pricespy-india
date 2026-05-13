@@ -302,7 +302,7 @@ export const categories = [
   { name: "Health & Pharma", slug: "health", icon: "local_pharmacy", count: 15 },
   { name: "Furniture & Home", slug: "furniture", icon: "chair", count: 12 },
   { name: "Travel", slug: "travel", icon: "flight", count: 8 },
-  { name: "Eyewear", slug: "eyewear", icon: "glasses", count: 6 },
+  { name: "Eyewear", slug: "eyewear", icon: "visibility", count: 6 },
   { name: "Automobile", slug: "automobile", icon: "directions_car", count: 7 },
   { name: "Real Estate", slug: "real-estate", icon: "real_estate_agent", count: 5 },
   { name: "Fintech", slug: "fintech", icon: "account_balance", count: 9 },

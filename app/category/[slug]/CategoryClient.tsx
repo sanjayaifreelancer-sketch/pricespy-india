@@ -44,7 +44,7 @@ const categoryIcons: Record<string, string> = {
   health: 'local_pharmacy',
   furniture: 'chair',
   travel: 'flight',
-  eyewear: 'glasses',
+  eyewear: 'visibility',
   automobile: 'directions_car',
   'real-estate': 'real_estate_agent',
   fintech: 'account_balance',
