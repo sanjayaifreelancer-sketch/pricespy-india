@@ -155,5 +155,5 @@ export async function getWishlist(userId: string): Promise<string[]> {
     .from('wishlists')
     .select('product_id')
     .eq('user_id', userId)
-  return (data || []).map(w => w.product_id)
+  return (data || []).map((w: any) => w.product_id)
 }
