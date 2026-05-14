@@ -25,11 +25,17 @@ export default function AdminProductsPage() {
 
   useEffect(() => { load() }, [])
 
-  const categoryMap = new Map(categories.map(c => [c.id, c]))
+  const cats = Array.isArray(categories) ? categories : []
+  const prods = Array.isArray(products) ? products : []
+  const categoryMap = new Map(cats.map(c => [c.id, c]))
 
-  const filtered = products.filter(p =>
-    !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.brand.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = prods.filter(p => {
+    if (!p) return false
+    if (!search) return true
+    const n = (p.name || '').toLowerCase()
+    const b = (p.brand || '').toLowerCase()
+    return n.includes(search.toLowerCase()) || b.includes(search.toLowerCase())
+  })
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this product? This cannot be undone.')) return
