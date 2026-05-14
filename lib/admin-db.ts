@@ -23,11 +23,12 @@ export async function adminGetAllProducts(): Promise<Product[]> {
 }
 
 export async function adminGetProduct(id: string) {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('products')
     .select('*, prices(*)')
     .eq('id', id)
-    .single()
+    .maybeSingle()
+  if (error) throw error
   return data as any
 }
 

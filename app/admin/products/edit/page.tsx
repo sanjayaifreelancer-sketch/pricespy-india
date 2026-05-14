@@ -35,39 +35,44 @@ function EditProductForm() {
 
   useEffect(() => {
     if (!id) { setLoading(false); return }
-    Promise.all([adminGetProduct(id), getCategories()]).then(([product, cats]) => {
-      setCategories(cats)
-      if (product) {
-        setForm({
-          name: product.name || '',
-          slug: product.slug || '',
-          category_id: product.category_id || '',
-          brand: product.brand || '',
-          description: product.description || '',
-          image_url: product.image_url || '',
-          video_url: product.video_url || '',
-          featured: product.featured || false,
-        })
-        setImages(product.images || [])
-        if (product.specs && typeof product.specs === 'object') {
-          setSpecs(Object.entries(product.specs).map(([key, value]) => ({ key, value: String(value) })))
-        }
-        if (product.prices) {
-          const priceMap: any = {}
-          for (const p of product.prices) {
-            priceMap[p.platform] = {
-              id: p.id,
-              price: String(p.price),
-              original_price: String(p.original_price),
-              affiliate_link: p.affiliate_link || '',
-              in_stock: p.in_stock ?? true,
-            }
+    Promise.all([adminGetProduct(id), getCategories()])
+      .then(([product, cats]) => {
+        setCategories(cats)
+        if (product) {
+          setForm({
+            name: product.name || '',
+            slug: product.slug || '',
+            category_id: product.category_id || '',
+            brand: product.brand || '',
+            description: product.description || '',
+            image_url: product.image_url || '',
+            video_url: product.video_url || '',
+            featured: product.featured || false,
+          })
+          setImages(product.images || [])
+          if (product.specs && typeof product.specs === 'object') {
+            setSpecs(Object.entries(product.specs).map(([key, value]) => ({ key, value: String(value) })))
           }
-          setPrices(priceMap)
+          if (product.prices) {
+            const priceMap: any = {}
+            for (const p of product.prices) {
+              priceMap[p.platform] = {
+                id: p.id,
+                price: String(p.price),
+                original_price: String(p.original_price),
+                affiliate_link: p.affiliate_link || '',
+                in_stock: p.in_stock ?? true,
+              }
+            }
+            setPrices(priceMap)
+          }
         }
-      }
-      setLoading(false)
-    })
+        setLoading(false)
+      })
+      .catch(err => {
+        setError(err.message || 'Failed to load product')
+        setLoading(false)
+      })
   }, [id])
 
   const addImage = () => {

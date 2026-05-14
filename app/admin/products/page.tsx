@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { adminGetAllProducts, adminDeleteProduct } from '@/lib/admin-db'
 import { getCategories } from '@/lib/db'
 import type { Product, Category } from '@/types'
-import { Package, Plus, Edit3, Trash2, Search } from 'lucide-react'
+import { Package, Plus, Edit3, Trash2, Search, AlertTriangle } from 'lucide-react'
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<any[]>([])
@@ -13,6 +13,7 @@ export default function AdminProductsPage() {
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [deletingAll, setDeletingAll] = useState(false)
 
   const load = async () => {
     setLoading(true)
@@ -36,8 +37,21 @@ export default function AdminProductsPage() {
     try {
       await adminDeleteProduct(id)
       setProducts(prev => prev.filter(p => p.id !== id))
-    } catch { alert('Failed to delete') }
+    } catch { alert('Failed to delete. Make sure DELETE RLS policy exists on products table.') }
     setDeleting(null)
+  }
+
+  const handleDeleteAll = async () => {
+    if (!confirm(`Delete ALL ${products.length} products? This cannot be undone.`)) return
+    setDeletingAll(true)
+    try {
+      for (const p of products) {
+        await adminDeleteProduct(p.id)
+      }
+      setProducts([])
+      alert('All products deleted.')
+    } catch { alert('Failed to delete all. Make sure DELETE RLS policy exists on products table.') }
+    setDeletingAll(false)
   }
 
   return (
@@ -47,13 +61,28 @@ export default function AdminProductsPage() {
           <h1 className="text-[24px] font-bold text-on-surface">Products</h1>
           <p className="text-[14px] text-on-surface-variant mt-1">{products.length} products total</p>
         </div>
-        <Link
-          href="/admin/products/new"
-          className="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl text-[14px] font-semibold hover:bg-primary-container hover:text-on-primary-container transition-all active:scale-95"
-        >
-          <Plus size={18} />
-          Add Product
-        </Link>
+        <div className="flex items-center gap-2">
+          {products.length > 0 && (
+            <button
+              onClick={handleDeleteAll}
+              disabled={deletingAll}
+              className="flex items-center gap-2 bg-error/10 text-error px-4 py-2.5 rounded-xl text-[13px] font-semibold hover:bg-error/20 transition-all disabled:opacity-50"
+            >
+              {deletingAll ? (
+                <><div className="w-4 h-4 border-2 border-error/30 border-t-error rounded-full animate-spin" /> Deleting...</>
+              ) : (
+                <><Trash2 size={16} /> Delete All</>
+              )}
+            </button>
+          )}
+          <Link
+            href="/admin/products/new"
+            className="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl text-[14px] font-semibold hover:bg-primary-container hover:text-on-primary-container transition-all active:scale-95"
+          >
+            <Plus size={18} />
+            Add Product
+          </Link>
+        </div>
       </div>
 
       <div className="relative max-w-sm">

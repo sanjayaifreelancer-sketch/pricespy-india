@@ -118,6 +118,22 @@ CREATE POLICY "Users can delete own alerts" ON price_alerts FOR DELETE USING (au
 -- Admin users RLS
 CREATE POLICY "Admins can read own access" ON admin_users FOR SELECT USING (auth.uid() = id);
 
+-- Admin CRUD policies (run AFTER admin user exists)
+-- Products
+CREATE POLICY "Admins can insert products" ON products FOR INSERT WITH CHECK (auth.uid() IN (SELECT id FROM admin_users));
+CREATE POLICY "Admins can update products" ON products FOR UPDATE USING (auth.uid() IN (SELECT id FROM admin_users));
+CREATE POLICY "Admins can delete products" ON products FOR DELETE USING (auth.uid() IN (SELECT id FROM admin_users));
+
+-- Prices
+CREATE POLICY "Admins can insert prices" ON prices FOR INSERT WITH CHECK (auth.uid() IN (SELECT id FROM admin_users));
+CREATE POLICY "Admins can update prices" ON prices FOR UPDATE USING (auth.uid() IN (SELECT id FROM admin_users));
+CREATE POLICY "Admins can delete prices" ON prices FOR DELETE USING (auth.uid() IN (SELECT id FROM admin_users));
+
+-- Categories
+CREATE POLICY "Admins can insert categories" ON categories FOR INSERT WITH CHECK (auth.uid() IN (SELECT id FROM admin_users));
+CREATE POLICY "Admins can update categories" ON categories FOR UPDATE USING (auth.uid() IN (SELECT id FROM admin_users));
+CREATE POLICY "Admins can delete categories" ON categories FOR DELETE USING (auth.uid() IN (SELECT id FROM admin_users));
+
 -- Authenticated user policies for wishlists
 CREATE POLICY "Users can view own wishlist" ON wishlists FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can add to wishlist" ON wishlists FOR INSERT WITH CHECK (auth.uid() = user_id);
