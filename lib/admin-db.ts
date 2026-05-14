@@ -5,11 +5,12 @@ import type { Product, Category, Price, Platform } from '@/types'
 export async function isAdmin(): Promise<boolean> {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return false
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('admin_users')
     .select('id')
     .eq('id', user.id)
-    .single()
+    .maybeSingle()
+  if (error) return false
   return !!data
 }
 
@@ -41,7 +42,7 @@ export async function adminCreateProduct(product: {
     .from('products')
     .insert([{ ...product, specs: JSON.stringify(product.specs), images: JSON.stringify(product.images) }])
     .select()
-    .single()
+    .maybeSingle()
   if (error) throw error
   return data
 }
@@ -59,7 +60,7 @@ export async function adminUpdateProduct(id: string, product: Partial<{
     .update(payload)
     .eq('id', id)
     .select()
-    .single()
+    .maybeSingle()
   if (error) throw error
   return data
 }
@@ -81,7 +82,7 @@ export async function adminUpsertPrice(price: {
     .from('prices')
     .upsert([price], { onConflict: 'product_id,platform' })
     .select()
-    .single()
+    .maybeSingle()
   if (error) throw error
   return data
 }
@@ -110,7 +111,7 @@ export async function adminCreateCategory(cat: {
     .from('categories')
     .insert([cat])
     .select()
-    .single()
+    .maybeSingle()
   if (error) throw error
   return data
 }
@@ -123,7 +124,7 @@ export async function adminUpdateCategory(id: string, cat: Partial<{
     .update(cat)
     .eq('id', id)
     .select()
-    .single()
+    .maybeSingle()
   if (error) throw error
   return data
 }
