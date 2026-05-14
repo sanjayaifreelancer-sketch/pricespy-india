@@ -1,10 +1,10 @@
 'use client'
 
 import ProductCard from '@/components/product/ProductCard'
-import { getAllProducts } from '@/lib/utils'
+import { useProducts } from '@/lib/useProducts'
 
 export default function TopProducts() {
-  const products = getAllProducts()
+  const { products } = useProducts()
   return (
     <section className="space-y-5">
       <h2 className="text-[22px] font-semibold text-on-surface tracking-tight">Top Products</h2>

@@ -4,12 +4,12 @@ import { useState } from 'react'
 import Navbar from '@/components/layout/Navbar'
 import BottomNav from '@/components/layout/BottomNav'
 import ProductCard from '@/components/product/ProductCard'
-import { getAllProducts } from '@/lib/utils'
+import { useProducts } from '@/lib/useProducts'
 import { Tag, Zap } from 'lucide-react'
 
 export default function DealsPage() {
   const [filter, setFilter] = useState('All')
-  const allProducts = getAllProducts()
+  const { products: allProducts } = useProducts()
 
   const filters = ['All', 'Amazon', 'Flipkart', 'Meesho', 'Under ₹2000']
   const filtered = filter === 'All'

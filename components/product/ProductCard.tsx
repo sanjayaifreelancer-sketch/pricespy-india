@@ -21,7 +21,7 @@ export default function ProductCard({ product }: { product: SampleProduct }) {
       <article className="group bg-surface-container-lowest border border-outline-variant/40 rounded-2xl overflow-hidden flex flex-col hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all cursor-pointer h-full active:scale-[0.98] duration-200">
         <div className="relative aspect-[4/3] bg-surface-container-low p-6 flex items-center justify-center overflow-hidden">
           <img
-            src={getProductImage(product.slug) || `https://via.placeholder.com/300x300/e3e2e7/414755?text=${product.name[0]}`}
+            src={product.image_url || getProductImage(product.slug) || `https://via.placeholder.com/300x300/e3e2e7/414755?text=${product.name[0]}`}
             alt={product.name}
             className="object-contain h-full w-full group-hover:scale-110 transition-transform duration-500"
           />

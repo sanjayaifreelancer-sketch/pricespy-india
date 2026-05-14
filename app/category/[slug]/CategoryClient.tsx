@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
 import BottomNav from '@/components/layout/BottomNav'
 import ProductCard from '@/components/product/ProductCard'
-import { getAllProducts } from '@/lib/utils'
+import { useProducts } from '@/lib/useProducts'
 import { ArrowLeft } from 'lucide-react'
 
 const categoryNames: Record<string, string> = {
@@ -56,7 +56,7 @@ const categoryIcons: Record<string, string> = {
 
 export default function CategoryClient({ slug }: { slug: string }) {
   const categoryName = categoryNames[slug] || slug.replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase())
-  const allProducts = getAllProducts()
+  const { products: allProducts } = useProducts()
   const products = useMemo(() => allProducts.filter(p => p.category === slug), [allProducts, slug])
 
   return (

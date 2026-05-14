@@ -4,13 +4,14 @@ import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
 import BottomNav from '@/components/layout/BottomNav'
 import { useStore } from '@/lib/store'
-import { getAllProducts, formatPrice, getProductImage } from '@/lib/utils'
+import { formatPrice, getProductImage } from '@/lib/utils'
+import { useProducts } from '@/lib/useProducts'
 import { Platform, platformConfig } from '@/types'
 import { X, ShoppingCart, ArrowLeft } from 'lucide-react'
 
 export default function ComparePage() {
   const { compareList, removeFromCompare, clearCompare } = useStore()
-  const allProducts = getAllProducts()
+  const { products: allProducts } = useProducts()
   const products = compareList.map(item => allProducts.find(p => p.slug === item.slug)).filter(Boolean)
 
   if (products.length === 0) {
@@ -76,7 +77,7 @@ export default function ComparePage() {
                     >
                       <X size={14} />
                     </button>
-                    <img src={getProductImage(p.slug)} alt={p.name} className="h-24 object-contain mx-auto mb-3" />
+                    <img src={p && getProductImage(p.slug)} alt={p.name} className="h-24 object-contain mx-auto mb-3" />
                     <Link href={`/products/${p.slug}`} className="text-[14px] font-semibold text-on-surface hover:text-primary transition-colors">
                       {p.name}
                     </Link>

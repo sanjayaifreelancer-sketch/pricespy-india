@@ -4,11 +4,11 @@ import { useState, useMemo } from 'react'
 import Navbar from '@/components/layout/Navbar'
 import BottomNav from '@/components/layout/BottomNav'
 import ProductCard from '@/components/product/ProductCard'
-import { getAllProducts } from '@/lib/utils'
+import { useProducts } from '@/lib/useProducts'
 import { Package } from 'lucide-react'
 
 export default function ProductsPage() {
-  const allProducts = getAllProducts()
+  const { products: allProducts } = useProducts()
   const [category, setCategory] = useState('All')
 
   const categories = useMemo(() => {

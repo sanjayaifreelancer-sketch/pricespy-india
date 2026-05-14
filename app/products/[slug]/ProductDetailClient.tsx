@@ -8,7 +8,8 @@ import PriceHistoryChart from '@/components/product/PriceHistoryChart'
 import PriceAlertForm from '@/components/product/PriceAlertForm'
 import ProductSpecs from '@/components/product/ProductSpecs'
 import BestDealBanner from '@/components/ui/BestDealBanner'
-import { getProductBySlug, formatPrice, getDiscount, getProductImage } from '@/lib/utils'
+import { formatPrice, getDiscount, getProductImage } from '@/lib/utils'
+import { useProduct } from '@/lib/useProducts'
 import { Platform } from '@/types'
 import { ArrowLeft, Heart, Share2, Copy, Star, Zap, TrendingDown, TrendingUp } from 'lucide-react'
 import { useStore } from '@/lib/store'
@@ -21,7 +22,7 @@ function generateInsight(discount: number, bestPrice: number, bestOriginal: numb
 }
 
 export default function ProductDetailClient({ slug }: { slug: string }) {
-  const product = getProductBySlug(slug)
+  const { product } = useProduct(slug)
   const { toggleWishlist, isInWishlist } = useStore()
 
   if (!product) {
@@ -62,7 +63,7 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
           <div className="lg:col-span-7 space-y-6">
             <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/40 overflow-hidden">
               <div className="aspect-square bg-surface-container-low p-8 md:p-12 flex items-center justify-center relative">
-                <img src={getProductImage(product.slug)} alt={product.name} className="object-contain w-full h-full max-h-[400px]" />
+                <img src={product.image_url || getProductImage(product.slug)} alt={product.name} className="object-contain w-full h-full max-h-[400px]" />
                 {discount > 0 && (
                   <span className="absolute top-4 right-4 bg-error text-on-error px-3 py-1.5 rounded-full text-[12px] font-bold shadow-lg">-{discount}%</span>
                 )}

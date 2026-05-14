@@ -2,11 +2,11 @@
 
 import { useState } from 'react'
 import ProductCard from '@/components/product/ProductCard'
-import { getAllProducts } from '@/lib/utils'
+import { useProducts } from '@/lib/useProducts'
 
 export default function TodayDeals() {
   const [filter, setFilter] = useState('All')
-  const products = getAllProducts()
+  const { products } = useProducts()
   const filtered = filter === 'All'
     ? products.slice(0, 3)
     : products.filter(p => p.prices[filter.toLowerCase() as keyof typeof p.prices]).slice(0, 3)

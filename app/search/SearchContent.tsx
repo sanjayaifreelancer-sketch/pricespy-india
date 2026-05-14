@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import Navbar from '@/components/layout/Navbar'
 import BottomNav from '@/components/layout/BottomNav'
 import ProductCard from '@/components/product/ProductCard'
-import { getAllProducts } from '@/lib/utils'
+import { useProducts } from '@/lib/useProducts'
 import { Search, X, SlidersHorizontal } from 'lucide-react'
 
 export default function SearchContent() {
@@ -16,7 +16,7 @@ export default function SearchContent() {
   const [sortBy, setSortBy] = useState<'price-asc' | 'price-desc' | 'name'>('name')
   const [selectedBrand, setSelectedBrand] = useState<string>('all')
 
-  const allProducts = getAllProducts()
+  const { products: allProducts } = useProducts()
   const brands = useMemo(() => Array.from(new Set(allProducts.map(p => p.brand))), [allProducts])
 
   const results = useMemo(() => {
