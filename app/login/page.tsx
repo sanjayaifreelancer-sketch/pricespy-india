@@ -76,7 +76,7 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'https://pricespy-india.vercel.app/login',
+      redirectTo: `${window.location.origin}/login`,
     })
     setLoading(false)
     if (error) setError(error.message)

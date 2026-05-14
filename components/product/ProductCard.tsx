@@ -8,6 +8,7 @@ import { useStore } from '@/lib/store'
 
 export default function ProductCard({ product }: { product: SampleProduct }) {
   const entries = Object.entries(product.prices) as [Platform, { price: number; original: number }][]
+  if (entries.length === 0) return null
   const bestEntry = entries.reduce((min, [, p]) => (p.price < min[1].price ? ([min[0], p] as [Platform, typeof p]) : min), entries[0] as [Platform, typeof entries[0][1]])
   const bestPrice = bestEntry[1]
   const bestPlatform = product.brand

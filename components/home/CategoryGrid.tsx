@@ -1,29 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-
-const categories = [
-  { name: 'Mobiles', slug: 'mobiles', icon: 'smartphone', count: 28 },
-  { name: 'Laptops', slug: 'laptops', icon: 'laptop_mac', count: 18 },
-  { name: 'Earbuds', slug: 'earbuds', icon: 'headphones', count: 15 },
-  { name: 'Fashion', slug: 'fashion', icon: 'checkroom', count: 22 },
-  { name: 'Home & Kitchen', slug: 'home-kitchen', icon: 'kitchen', count: 14 },
-  { name: 'Beauty', slug: 'beauty', icon: 'spa', count: 12 },
-  { name: 'Cameras', slug: 'cameras', icon: 'camera_alt', count: 9 },
-  { name: 'Accessories', slug: 'accessories', icon: 'watch', count: 20 },
-  { name: 'Grocery & Food', slug: 'grocery', icon: 'restaurant', count: 10 },
-  { name: 'Health & Pharma', slug: 'health', icon: 'local_pharmacy', count: 15 },
-  { name: 'Furniture & Home', slug: 'furniture', icon: 'chair', count: 12 },
-  { name: 'Travel', slug: 'travel', icon: 'flight', count: 8 },
-  { name: 'Eyewear', slug: 'eyewear', icon: 'visibility', count: 6 },
-  { name: 'Automobile', slug: 'automobile', icon: 'directions_car', count: 7 },
-  { name: 'Real Estate', slug: 'real-estate', icon: 'real_estate_agent', count: 5 },
-  { name: 'Fintech', slug: 'fintech', icon: 'account_balance', count: 9 },
-  { name: 'Baby & Kids', slug: 'baby-kids', icon: 'child_care', count: 8 },
-  { name: 'Events & Tickets', slug: 'events', icon: 'confirmation_number', count: 4 },
-  { name: 'Agriculture', slug: 'agriculture', icon: 'agriculture', count: 3 },
-  { name: 'B2B & Industrial', slug: 'b2b', icon: 'precision_manufacturing', count: 6 },
-]
+import { categories } from '@/lib/utils'
 
 export default function CategoryGrid() {
   return (

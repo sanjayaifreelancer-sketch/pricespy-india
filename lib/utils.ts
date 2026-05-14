@@ -289,7 +289,7 @@ export function getProductsByCategory(category: string): SampleProduct[] {
   return sampleProducts.filter(p => p.category === category)
 }
 
-export const categories = [
+export const categories: { name: string; slug: string; icon: string; count: number }[] = [
   { name: "Mobiles", slug: "mobiles", icon: "smartphone", count: 28 },
   { name: "Laptops", slug: "laptops", icon: "laptop_mac", count: 18 },
   { name: "Earbuds", slug: "earbuds", icon: "headphones", count: 15 },

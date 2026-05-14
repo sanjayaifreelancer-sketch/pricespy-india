@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { formatPrice } from '@/lib/utils'
 import { useStore } from '@/lib/store'
+import { createPriceAlert } from '@/lib/db'
+import { supabase } from '@/lib/supabase'
 import { Bell, CheckCircle } from 'lucide-react'
 
 export default function PriceAlertForm({ productName, productSlug, currentPrice }: { productName: string; productSlug: string; currentPrice: number }) {
@@ -10,8 +12,9 @@ export default function PriceAlertForm({ productName, productSlug, currentPrice 
   const [targetPrice, setTargetPrice] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const addAlert = useStore(s => s.addAlert)
+  const user = useStore(s => s.user)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     addAlert({
       productName,
@@ -20,6 +23,26 @@ export default function PriceAlertForm({ productName, productSlug, currentPrice 
       currentPrice,
       email,
     })
+
+    // Also persist to Supabase if configured
+    try {
+      const { data: product } = await supabase
+        .from('products')
+        .select('id')
+        .eq('slug', productSlug)
+        .maybeSingle()
+      if (product) {
+        await createPriceAlert({
+          email,
+          product_id: product.id,
+          target_price: Number(targetPrice),
+          user_id: user?.id,
+        })
+      }
+    } catch {
+      // Supabase not configured — local storage fallback is sufficient
+    }
+
     setSubmitted(true)
   }
 
@@ -50,6 +73,7 @@ export default function PriceAlertForm({ productName, productSlug, currentPrice 
           value={targetPrice}
           onChange={e => setTargetPrice(e.target.value)}
           placeholder="Your target price (₹)"
+          min="1"
           className="w-full bg-surface border border-outline-variant/30 rounded-xl px-4 py-3 text-[15px] text-on-surface placeholder-on-surface-variant focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all"
           required
         />

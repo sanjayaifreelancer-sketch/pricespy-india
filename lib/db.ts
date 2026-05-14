@@ -20,10 +20,16 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 }
 
 export async function getProductsByCategory(categorySlug: string): Promise<Product[]> {
+  const { data: cat } = await supabase
+    .from('categories')
+    .select('id')
+    .eq('slug', categorySlug)
+    .single()
+  if (!cat) return []
   const { data } = await supabase
     .from('products')
     .select('*, prices(*)')
-    .eq('category_id', supabase.rpc('get_category_id', { slug: categorySlug }))
+    .eq('category_id', cat.id)
   return data || []
 }
 
