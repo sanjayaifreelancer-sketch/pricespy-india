@@ -145,7 +145,9 @@ function EditProductForm() {
         }
       }
 
+      setSaving(false)
       window.location.href = '/admin/products'
+      return
     } catch (err: any) {
       setError(err.message || 'Failed to update product')
     }
