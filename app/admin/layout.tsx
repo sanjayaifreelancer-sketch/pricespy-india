@@ -1,16 +1,42 @@
 'use client'
 
+import { Component } from 'react'
 import { usePathname } from 'next/navigation'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import AdminGuard from '@/components/admin/AdminGuard'
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+class AdminErrorBoundary extends Component<{ children: React.ReactNode }, { error: string | null }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props)
+    this.state = { error: null }
+  }
+  static getDerivedStateFromError(err: any) {
+    return { error: err?.message || String(err) }
+  }
+  componentDidCatch(err: any, info: any) {
+    console.error('AdminLayout error:', err, info)
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="min-h-screen bg-surface flex items-center justify-center p-8">
+          <div className="max-w-xl text-center">
+            <h1 className="text-[24px] font-bold text-on-surface mb-4">Something went wrong</h1>
+            <pre className="text-[13px] text-error bg-error-container/10 p-4 rounded-xl mb-4 text-left overflow-auto max-h-60">{this.state.error}</pre>
+            <button onClick={() => window.location.href = '/admin/login'} className="text-primary underline">Back to login</button>
+          </div>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
+
+function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const isLoginPage = pathname === '/admin/login'
 
-  if (isLoginPage) {
-    return <>{children}</>
-  }
+  if (isLoginPage) return <>{children}</>
 
   return (
     <AdminGuard>
@@ -21,5 +47,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </main>
       </div>
     </AdminGuard>
+  )
+}
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <AdminErrorBoundary>
+      <AdminLayoutInner>{children}</AdminLayoutInner>
+    </AdminErrorBoundary>
   )
 }
