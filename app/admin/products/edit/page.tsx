@@ -1,16 +1,44 @@
 'use client'
 
+import { Component } from 'react'
 import { useState, useEffect, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { adminGetProduct, adminUpdateProduct, adminUpsertPrice } from '@/lib/admin-db'
 import { getCategories } from '@/lib/db'
 import type { Category, Platform } from '@/types'
 import { platformConfig, platformGroups } from '@/types'
-import { ArrowLeft, Plus, X, Save } from 'lucide-react'
+import { ArrowLeft, Plus, X, Save, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 
+class EditErrorBoundary extends Component<{ children: React.ReactNode }, { error: string | null }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props)
+    this.state = { error: null }
+  }
+  static getDerivedStateFromError(err: any) {
+    return { error: err?.message || String(err) }
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="max-w-3xl">
+          <Link href="/admin/products" className="inline-flex items-center gap-1.5 text-[13px] text-on-surface-variant hover:text-primary transition-colors mb-6">
+            <ArrowLeft size={16} /> Back to products
+          </Link>
+          <div className="text-center py-20">
+            <AlertTriangle size={40} className="text-error/50 mx-auto mb-3" />
+            <p className="text-[15px] text-on-surface-variant mb-2">Something went wrong</p>
+            <pre className="text-[12px] text-error bg-error-container/10 p-4 rounded-xl max-w-lg mx-auto overflow-auto">{this.state.error}</pre>
+            <button onClick={() => window.location.href = '/admin/products'} className="text-primary mt-4 underline">Go to products</button>
+          </div>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
+
 function EditProductForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const id = searchParams.get('id')
 
@@ -117,7 +145,7 @@ function EditProductForm() {
         }
       }
 
-      router.push('/admin/products')
+      window.location.href = '/admin/products'
     } catch (err: any) {
       setError(err.message || 'Failed to update product')
     }
@@ -320,7 +348,9 @@ export default function EditProductPage() {
         <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
       </div>
     }>
-      <EditProductForm />
+      <EditErrorBoundary>
+        <EditProductForm />
+      </EditErrorBoundary>
     </Suspense>
   )
 }
