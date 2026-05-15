@@ -77,10 +77,19 @@ function EditProductForm() {
             video_url: product.video_url || '',
             featured: product.featured || false,
           })
-          setImages(product.images || [])
-          if (product.specs && typeof product.specs === 'object') {
-            setSpecs(Object.entries(product.specs).map(([key, value]) => ({ key, value: String(value) })))
-          }
+          try {
+            const rawImgs = product.images
+            if (typeof rawImgs === 'string') { setImages(JSON.parse(rawImgs)) }
+            else if (Array.isArray(rawImgs)) { setImages(rawImgs) }
+            else { setImages([]) }
+          } catch { setImages([]) }
+          try {
+            const rawSpecs = product.specs
+            const specObj = typeof rawSpecs === 'string' ? JSON.parse(rawSpecs) : rawSpecs
+            if (specObj && typeof specObj === 'object' && !Array.isArray(specObj)) {
+              setSpecs(Object.entries(specObj).map(([k, v]) => ({ key: k, value: String(v) })))
+            }
+          } catch { /* ignore parse errors */ }
           if (product.prices) {
             const priceMap: any = {}
             for (const p of product.prices) {
